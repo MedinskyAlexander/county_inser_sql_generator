@@ -12,7 +12,7 @@ import static java.lang.String.format;
 public class QueryBuilder {
 
     private final String SqlTemplate = "INSERT INTO background.county_lookup(zipcode, state, city, county) " +
-            "('%s','%s','%s','%s');";
+            "VALUES ('%s','%s','%s','%s');";
 
     public String buildSQL(List<County> counties) {
         StringBuilder sb = new StringBuilder();
