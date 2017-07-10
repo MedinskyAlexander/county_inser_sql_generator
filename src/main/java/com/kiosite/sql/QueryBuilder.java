@@ -1,6 +1,6 @@
 package com.kiosite.sql;
 
-import com.kiosite.model.Row;
+import com.kiosite.model.County;
 
 import static java.lang.String.format;
 
@@ -13,15 +13,15 @@ public class QueryBuilder {
             "SELECT '%s','%s','%s','%s' " +
             "WHERE NOT EXISTS (SELECT * FROM background.county_lookup WHERE zipcode='%s');";
 
-    public String buildSQL(Row row){
-        String city = row.getUnacceptableCity();
+    public String buildSQL(County county) {
+        String city = county.getUnacceptableCity();
         if (city.isEmpty()){
-            city = row.getAcceptableCity();
+            city = county.getAcceptableCity();
             if (city.isEmpty()){
-                city = row.getPrimaryCity();
+                city = county.getPrimaryCity();
             }
         }
-        return format(SqlTemplate, row.getZipcode(), row.getState(), city, row.getCounty(), row.getZipcode());
+        return format(SqlTemplate, county.getZipcode(), county.getState(), city, county.getCounty(), county.getZipcode());
     }
 
 }

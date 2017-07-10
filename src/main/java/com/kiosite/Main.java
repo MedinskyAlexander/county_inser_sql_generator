@@ -1,13 +1,16 @@
 package com.kiosite;
 
-import com.kiosite.model.Row;
+import com.kiosite.dao.CountyDAO;
+import com.kiosite.model.County;
+import com.kiosite.orm.HibernateUtil;
 import com.kiosite.reader.CsvReader;
 import com.kiosite.sql.QueryBuilder;
 
-import java.io.*;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Main {
 
@@ -18,21 +21,25 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
 
-        List<Row> rows = new CsvReader(CSV_FILE_PATH).readFile().getRows();
+        List<County> rows = new CsvReader(CSV_FILE_PATH).readFile().getRows();
+
+        CountyDAO countyDao = new CountyDAO();
+        List<County> persistedCounties = countyDao.findAllCounties();
+        HibernateUtil.shutdown();
+
+        List<County> newCounties = rows.stream()
+                .filter(row -> !persistedCounties.contains(row))
+                .collect(Collectors.toList());
+
+
         QueryBuilder queryBuilder = new QueryBuilder();
         StringBuilder sb = new StringBuilder();
 
-        int fileCounter = 0;
-
-        for (int i = 0; i < rows.size(); i++) {
-            Row row = rows.get(i);
-            sb.append(queryBuilder.buildSQL(row));
+        for (County county : newCounties) {
+            sb.append(queryBuilder.buildSQL(county));
             sb.append("\n");
-            if (i > 0 && i % 1000 == 0) {
-                saveFile(String.format(OUTPUT_FILE_NAME_TEMPLATE, fileCounter++), sb.toString());
-                sb.delete(0, sb.length());
-            }
         }
+        saveFile(String.format(OUTPUT_FILE_NAME_TEMPLATE, 0), sb.toString());
 
         System.out.println(sb.toString());
     }

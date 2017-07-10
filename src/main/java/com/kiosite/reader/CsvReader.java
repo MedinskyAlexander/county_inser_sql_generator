@@ -1,6 +1,6 @@
 package com.kiosite.reader;
 
-import com.kiosite.model.Row;
+import com.kiosite.model.County;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,13 +15,13 @@ public class CsvReader {
 
 
     private String pathToFile;
-    private List<Row> rows = new ArrayList<>();
+    private List<County> rows = new ArrayList<>();
 
     public CsvReader(String path) {
         pathToFile = path;
     }
 
-    public List<Row> getRows() {
+    public List<County> getRows() {
         return rows;
     }
 
@@ -33,8 +33,8 @@ public class CsvReader {
                 String line = scanner.nextLine();
                 String[] elements = line.split("\t");
 
-                if (elements.length == 6) {
-                    Row row = new Row()
+                try {
+                    County county = new County()
                             .setZipcode(fixQuotes(elements[0]))
                             .setPrimaryCity(fixQuotes(elements[1]))
                             .setAcceptableCity(fixQuotes(elements[2]))
@@ -42,7 +42,9 @@ public class CsvReader {
                             .setState(fixQuotes(elements[4]))
                             .setCounty(fixQuotes(elements[5]));
 
-                    rows.add(row);
+                    rows.add(county);
+                } catch (Exception e) {
+                    System.out.println(line);
                 }
             }
 
