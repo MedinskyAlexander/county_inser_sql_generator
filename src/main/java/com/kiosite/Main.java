@@ -16,7 +16,7 @@ public class Main {
 
     private static final String CSV_FILE_PATH = "/zip_code_database.csv";
     private static final String OUTPUT_FILE_PATH = "/home/alexmedinsky/Documents/hiretrue/tasks/45/query/";
-    private static final String OUTPUT_FILE_NAME_TEMPLATE = "county_insert_if_not_exist_%d.sql";
+    private static final String OUTPUT_FILE_NAME = "county_insert_if_not_exist.sql";
 
 
     public static void main(String[] args) throws IOException {
@@ -31,22 +31,15 @@ public class Main {
                 .filter(row -> !persistedCounties.contains(row))
                 .collect(Collectors.toList());
 
+        String sql = new QueryBuilder().buildSQL(newCounties);
+        saveFile(sql);
 
-        QueryBuilder queryBuilder = new QueryBuilder();
-        StringBuilder sb = new StringBuilder();
-
-        for (County county : newCounties) {
-            sb.append(queryBuilder.buildSQL(county));
-            sb.append("\n");
-        }
-        saveFile(String.format(OUTPUT_FILE_NAME_TEMPLATE, 0), sb.toString());
-
-        System.out.println(sb.toString());
+        System.out.println(sql);
     }
 
-    private static void saveFile(String fileName, String content) {
+    private static void saveFile(String content) {
         try{
-            Files.write(Paths.get(OUTPUT_FILE_PATH, fileName), content.getBytes());
+            Files.write(Paths.get(OUTPUT_FILE_PATH, OUTPUT_FILE_NAME), content.getBytes());
         } catch (IOException e) {
             e.printStackTrace();
         }

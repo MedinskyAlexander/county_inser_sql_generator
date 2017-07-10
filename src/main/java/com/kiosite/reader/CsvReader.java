@@ -40,11 +40,11 @@ public class CsvReader {
                             .setAcceptableCity(fixQuotes(elements[2]))
                             .setUnacceptableCity(fixQuotes(elements[3]))
                             .setState(fixQuotes(elements[4]))
-                            .setCounty(fixQuotes(elements[5]));
+                            .setCounty(fixCounty(fixQuotes(elements[5])));
 
                     rows.add(county);
                 } catch (Exception e) {
-                    System.out.println(line);
+                    System.out.println("Oops, bad row: " + line);
                 }
             }
 
@@ -57,6 +57,11 @@ public class CsvReader {
 
     private String fixQuotes(String line){
         return line.replace("\"", "");
+    }
+
+    private String fixCounty(String line) {
+        String result = line.replace("County", "");
+        return result.trim();
     }
 
 }
